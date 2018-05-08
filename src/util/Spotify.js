@@ -88,11 +88,11 @@ JSON : {
  */
 let apiKey = '';
 const clientID = '063c8609bee64690b2e960b955d7c899';
-const redirURI = 'https://jammming-mrmacvos.surge.sh/';
-/* const redirURI = 'http://localhost:3000/'; */
+/* const redirURI = 'https://jammming-mrmacvos.surge.sh/'; */
+const redirURI = 'http://localhost:3000/';
 
 const Spotify = {
-	search(term) {
+	search(term, callbackf) {
 		return fetch(
 			`https://api.spotify.com/v1/search?type=track&q=${term}`
 			, {
@@ -110,8 +110,7 @@ const Spotify = {
 							uri: track.uri
 						};
 					});
-/*					alert(JSON.stringify(retval)); */
-					return retval;
+					callbackf(retval);
 				}
 				else {
 					return [];
@@ -119,51 +118,47 @@ const Spotify = {
 			});
 	},
 
-	savePlaylist(playlist, trackURIs) {
-		let ok = false;
+	savePlaylist(playlist, trackURIs, callbackf) {
+		if(playlist !== '' && trackURIs.lentgh !== 0) {
+			fetch(
+				'https://api.spotify.com/v1/me'
+				, {
+					headers:{Authorization:`Bearer ${apiKey}`}
+				})
+				.then(response => response.json())
+				.then(jsonResponse => {
+/*	alert(JSON.stringify(jsonResponse));  */
 
-		if(playlist === '' || trackURIs.lentgh === 0) {
-			return ok;
+					let userID = jsonResponse.id;
+					fetch(`https://api.spotify.com/v1/users/${userID}/playlists`
+						, {
+							headers:{Authorization:`Bearer ${apiKey}`}
+							, method: 'post'
+							, body: JSON.stringify({"name":playlist, "public":"false"})
+						})
+						.then(response => response.json())
+						.then(jsonResponse => {
+/*	alert(JSON.stringify(jsonResponse)); */
+							let playlistID = jsonResponse.id;
+							fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`
+								, {
+									headers:{Authorization:`Bearer ${apiKey}`}
+									, method: 'post'
+									, body: JSON.stringify({"uris":trackURIs})
+								})
+								.then(response => response.json())
+								.then(jsonResponse => {
+/*	alert(JSON.stringify(jsonResponse)); */
+									if(jsonResponse.error) {
+										alert(jsonResponse.error.status);
+									}
+									else {
+										callbackf();
+									}
+								});
+						});
+				});
 		}
-
-		fetch(
-			'https://api.spotify.com/v1/me'
-			, {
-				headers:{Authorization:`Bearer ${apiKey}`}
-			})
-			.then(response => response.json())
-			.then(jsonResponse => {
-
-				let userID = jsonResponse.id;
-				fetch(`https://api.spotify.com/v1/users/${userID}/playlists`
-					, {
-						headers:{Authorization:`Bearer ${apiKey}`}
-						, method: 'post'
-						, body: JSON.stringify({"name":playlist, "public":"false"})
-					})
-					.then(response => response.json())
-					.then(jsonResponse => {
-/*						alert(JSON.stringify(jsonResponse)); */
-						let playlistID = jsonResponse.id;
-						fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`
-							, {
-								headers:{Authorization:`Bearer ${apiKey}`}
-								, method: 'post'
-								, body: JSON.stringify({"uris":trackURIs})
-							})
-							.then(response => response.json())
-							.then(jsonResponse => {
-								if(jsonResponse.error) {
-									alert(jsonResponse.error.status);
-								}
-								else {
-									ok = true;
-								}
-							});
-					});
-			});
-
-		return ok;
 	},
 
 	getAccessToken() {
@@ -176,10 +171,8 @@ const Spotify = {
 			else {
 				apiKey = apiKey[1];
 				const expiresIn = url.match(/expires_in=([^&]*)/)[1];
-/*
 				window.setTimeout(() => apiKey = '', expiresIn * 1000);
-				window.history.pushState('Access Token', null, '/');
-*/
+				window.history.pushState(apiKey, null, '/');
 			}
 		}
 		return apiKey;

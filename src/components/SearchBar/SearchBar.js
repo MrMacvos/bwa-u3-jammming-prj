@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './SearchBar.css';
+import Spotify from '../../util/Spotify';
 
 class SearchBar extends Component {
 	constructor(props) {
@@ -15,8 +16,9 @@ class SearchBar extends Component {
 		this.setState({term: event.target.value});
 	}
 
+
 	search() {
-		this.props.onSearch(this.state.term);
+		Spotify.search(this.state.term, this.props.onSearch);
 	}
 
 	render() {
