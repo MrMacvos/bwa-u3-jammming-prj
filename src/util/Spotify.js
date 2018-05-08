@@ -88,8 +88,8 @@ JSON : {
  */
 let apiKey = '';
 const clientID = '063c8609bee64690b2e960b955d7c899';
-/* const redirURI = 'https://jammming-mrmacvos.surge.sh/'; */
-const redirURI = 'http://localhost:3000/';
+const redirURI = 'https://jammming-mrmacvos.surge.sh/';
+/* const redirURI = 'http://localhost:3000/'; */
 
 const Spotify = {
 	search(term, callbackf) {
