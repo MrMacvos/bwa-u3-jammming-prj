@@ -5,15 +5,21 @@ import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 import Spotify from '../../util/Spotify';
 
+/*
+	https://jammming-mrmacvos.surge.sh
+
+	Don't forget to set the redirURI in Spotify.js before uploading.
+*/
+
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			playlistName: 'My Playlist',
+			playlistName: 'New Playlist',
 			playlistTracks: [
-				{name:'Marc', artist:'Hans', album:'Eibert', id:123}
-				, {name:'Loes', artist:'Vos', album:'Dogterom', id:234}
-				, {name:'Daan', artist:'En', album:'Bob', id:345}
+				{name:'Check', artist:'This', album:'Album', id:123}
+				, {name:'I am', artist:'Vos', album:'Fox', id:234}
+				, {name:'Node', artist:'React', album:'Babel', id:345}
 			],
 			searchResults: [
 				{name:'Wafwaf', artist:'Taiga', album:'Ik blaf', id:1123}
@@ -53,14 +59,15 @@ class App extends Component {
 
 	resetPlaylist() {
 		this.setState({
-			playlistName: 'My Playlist'
+			playlistName: 'New Playlist'
 			, playlistTracks: []
 		});
 	}
 
 	savePlaylist() {
-		let trackURIs = this.state.playlistTracks.map(ptrack => 'spotify:track:' + ptrack.id);
-		Spotify.savePlaylist(this.state.playlistName, trackURIs, this.resetPlaylist);
+		let trackURIs = this.state.playlistTracks.map(ptrack => ptrack.uri);
+		let trackListName = this.state.playlistName;
+		Spotify.savePlaylist(trackListName, trackURIs, this.resetPlaylist);
 	}
 
 	render() {

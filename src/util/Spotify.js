@@ -103,11 +103,13 @@ const Spotify = {
 				if(jsonResponse.tracks) {
 					let retval = jsonResponse.tracks.items.map(function(track) {
 						return {
-							name: track.name,
-							artist: track.artists[0].name,
-							album: track.album.name,
-							id: track.id,
-							uri: track.uri
+							name: track.name
+							, artist: track.artists[0].name
+							, album: track.album.name
+							, id: track.id
+							, uri: track.uri
+							, preview: track.preview_url
+							, cover: track.album.images[1].url
 						};
 					});
 					callbackf(retval);
